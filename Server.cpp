@@ -10,6 +10,11 @@
 
 
 int main() {
+	std::string port;
+	std::cin >> port;
+	int PORT = std::stoi(port);
+
+
 	//create socket
 	int listening = socket(AF_INET, SOCK_STREAM, 0);
 	if(listening == -1) {
@@ -20,7 +25,7 @@ int main() {
 	//bind socket to IP/port
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
-	hint.sin_port = htons(8000);
+	hint.sin_port = htons(PORT);
 	inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
 
 	if (bind(listening, (sockaddr*)&hint, sizeof(hint)) == -1) {
@@ -85,12 +90,11 @@ int main() {
 		//Display message
 		std::cout << "Recieved: " << std::string(buf, 0, bytesRecv) << "\n";
 
-		//Resend message
-		send(clientSocket, buf, bytesRecv + 1, 0);
+		char res[4096] = "HTTP/1.1 200 ok\nContent-Type: text/html; charset=UTF-8\n\n<HTML><body><h1>test</h1></body></HTML>";
+		send(clientSocket, res, sizeof(res) + 1, 0);
+		std::cout << res << "\n";
+		close(clientSocket);
 	}
-
-	//close socket
-	close(clientSocket);
 
 	return 0;
 }
