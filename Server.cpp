@@ -71,11 +71,10 @@ int main() {
 
 	//while recieving, display message, send same message back
 	char buf[4096];
+	std::string message;
 	while (true) {
-		//Clear buffer
 		memset(buf, 0, 4096);
 
-		//Wait for message
 		int bytesRecv = recv(clientSocket, buf, 4096, 0);
 		if (bytesRecv == -1) {
 			std::cerr << "Could not connect\n";
@@ -87,13 +86,18 @@ int main() {
 			break;
 		}
 
-		//Display message
 		std::cout << "Recieved: " << std::string(buf, 0, bytesRecv) << "\n";
 
-		char res[4096] = "HTTP/1.1 200 ok\nContent-Type: text/html; charset=UTF-8\n\n<HTML><body><h1>test</h1></body></HTML>";
-		send(clientSocket, res, sizeof(res) + 1, 0);
-		std::cout << res << "\n";
-		close(clientSocket);
+		//Resend message
+		//send(clientSocket, buf, bytesRecv + 1, 0);
+
+		std::cout << "> ";
+		std::getline(std::cin, message);
+
+		int sendRes = send(clientSocket, message.c_str(), message.size() + 1, 0);
+		if(sendRes == -1) {
+			std::cout << "Could not send to server\n";
+		}
 	}
 
 	return 0;
